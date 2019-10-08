@@ -1,44 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct  7 16:55:09 2019
+Created on Tue Oct  8 16:55:35 2019
 
 @author: Kelvin
 """
 
-import numpy as np
-
-def spill_shift(init,a):
-    D=np.insert(a,[-1],np.zeros((1,init['size'])),axis=0)
-    D=np.delete(D,0,axis=0)
-    U=np.insert(a,[0],np.zeros((1,init['size'])),axis=0)
-    U=np.delete(U,-1,axis=0)
-    L=np.insert(a,0,0,axis=1)
-    L=np.delete(L,-1,1)
-    R=(np.insert(a,-1,0,axis=1))
-    R=np.delete(R,0,1)
-    shift={'down':a-D,'up':a-U,'left':a-L,'right':a-R}
-    return shift
-    
-def grid_shift(init,shift,a):
-        spill_down=np.where(shift['down']>=init['spillsize'],shift['down'],0)
-        spill_down_indices=(np.asarray(np.where(spill_down!=0)))
-        spill_down[(spill_down_indices[0],spill_down_indices[1])]=-1
-        spill_down[(spill_down_indices[0]+1,spill_down_indices[1])]=1
-
-        spill_up=np.where(shift['up']>=init['spillsize'],shift['up'],0)
-        spill_up_indices=(np.asarray(np.where(spill_up!=0)))
-        spill_up[(spill_up_indices[0],spill_up_indices[1])]=-1
-        spill_up[(spill_up_indices[0]-1,spill_up_indices[1])]=1
-        
-        spill_left=np.where(shift['left']>=init['spillsize'],shift['left'],0)
-        spill_left_indices=(np.asarray(np.where(spill_left!=0)))
-        spill_left[(spill_left_indices[0],spill_left_indices[1])]=-1
-        spill_left[(spill_left_indices[0],spill_left_indices[1]-1)]=1
-        
-        spill_right=np.where(shift['right']>=init['spillsize'],shift['right'],0)
-        spill_right_indices=(np.asarray(np.where(spill_right!=0)))
-        spill_right[(spill_right_indices[0],spill_right_indices[1])]=-1
-        spill_right[(spill_right_indices[0],spill_right_indices[1]+1)]=1
-        
-        a = a+spill_down+spill_up+spill_left+spill_right        
-        return a
+def spill(init,a,indices):
+    a[a>init['spillsize']]=0
+#        Finding indices of spill-over elements, up, down, right, left
+    row_centre=indices[0]
+    row_down=[x+1 for x in indices[0]]
+    row_up=[x-1 for x in indices[0]]
+    col_centre=indices[1]
+    col_right=[y+1 for y in indices[1]]
+    col_left=[y-1 for y in indices[1]]
+#        Add one to cell up
+    a[(row_up,col_centre)] = a[(row_up,col_centre)]+1
+#        Add one to cell down
+    a[(row_down,col_centre)] = a[(row_down,col_centre)]+1
+#        Add one to cell left
+    a[(row_centre,col_left)] = a[(row_centre,col_left)]+1
+#        Add one to cell right
+    a[(row_centre,col_right)] = a[(row_centre,col_right)]+1
+    return a

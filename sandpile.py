@@ -7,6 +7,7 @@
 # =============================================================================
 import numpy as np
 import matplotlib.pyplot as plt
+from myFuncs import spill
 
 plt.close('all')
 
@@ -29,22 +30,7 @@ while a[1,1]==0 or a[1,init['size']-2]==0 or a[init['size']-2,1]==0 or a[init['s
     a[init['midsize'],init['midsize']]+=4
     while init['spillsize']+1 in a:
         indices = np.asarray(np.where(a==init['spillsize']+1))
-        a[a>init['spillsize']]=0
-#        Finding indices of spill-over elements, up, down, right, left
-        row_centre=indices[0]
-        row_down=[x+1 for x in indices[0]]
-        row_up=[x-1 for x in indices[0]]
-        col_centre=indices[1]
-        col_right=[y+1 for y in indices[1]]
-        col_left=[y-1 for y in indices[1]]
-#        Add one to cell up
-        a[(row_up,col_centre)] = a[(row_up,col_centre)]+1
-#        Add one to cell down
-        a[(row_down,col_centre)] = a[(row_down,col_centre)]+1
-#        Add one to cell left
-        a[(row_centre,col_left)] = a[(row_centre,col_left)]+1
-#        Add one to cell right
-        a[(row_centre,col_right)] = a[(row_centre,col_right)]+1
+        a=spill(init,a,indices)
         
 #       Set border. Sand falls off grid.
         if np.any(a[0]!=0) or np.any(a[init['size']-1]!=0) or np.any(a[:,0]!=0) or np.any(a[:,init['size']-1]!=0):            
@@ -62,22 +48,7 @@ for i in range(init['steps']+1):
         indices = np.asarray(np.where(a==init['spillsize']+1))
 #       Get avalanche sizes for histogram
         avalanche_sizes.append(len(indices[0])) 
-        a[a>init['spillsize']]=0
-#        Finding indices of spill-over elements, up, down, right, left
-        row_centre=indices[0]
-        row_down=[x+1 for x in indices[0]]
-        row_up=[x-1 for x in indices[0]]
-        col_centre=indices[1]
-        col_right=[y+1 for y in indices[1]]
-        col_left=[y-1 for y in indices[1]]
-#        Add one to cell up
-        a[(row_up,col_centre)] = a[(row_up,col_centre)]+1
-#        Add one to cell down
-        a[(row_down,col_centre)] = a[(row_down,col_centre)]+1
-#        Add one to cell left
-        a[(row_centre,col_left)] = a[(row_centre,col_left)]+1
-#        Add one to cell right
-        a[(row_centre,col_right)] = a[(row_centre,col_right)]+1
+        a=spill(init,a,indices)
 #       Set border. Sand falls off grid.
         if np.any(a[0]!=0) or np.any(a[init['size']-1]!=0) or np.any(a[:,0]!=0) or np.any(a[:,init['size']-1]!=0):            
             a[0]=0

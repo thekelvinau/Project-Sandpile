@@ -8,7 +8,7 @@
 # =============================================================================
 import numpy as np
 import matplotlib.pyplot as plt
-from myFuncs import spill_shift,grid_shift
+from real_myFuncs import spill_shift,grid_shift
 
 plt.close('all')
 
